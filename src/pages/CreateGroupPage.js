@@ -29,6 +29,7 @@ const CreateGroupPage = () => {
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [groupImageUrl, setGroupImageUrl] = useState(null);
+  // eslint-disable-next-line 
   const [groupImageFile, setGroupImageFile] = useState(null);
 
   const navigate = useNavigate();
