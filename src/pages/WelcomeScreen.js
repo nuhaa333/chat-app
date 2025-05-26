@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
-import { loginWithEmail, loginWithGoogle } from "../services/auth";
+import { registerWithEmail, loginWithGoogle } from "../services/auth";
 import {
   Box,
   Typography,
@@ -44,18 +44,31 @@ const WelcomeScreen = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await loginWithEmail(email, password);
-      console.log("Login successful", res.user);
-      await saveUserToFirestore(res.user);
-      navigate("/users");
-    } catch (err) {
-      console.error("Login error:", err.message);
-      alert("Login failed: " + err.message);
-    }
-  };
+  // const handleEmailLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await loginWithEmail(email, password);
+  //     console.log("Login successful", res.user);
+  //     await saveUserToFirestore(res.user);
+  //     navigate("/users");
+  //   } catch (err) {
+  //     console.error("Login error:", err.message);
+  //     alert("Login failed: " + err.message);
+  //   }
+  // };
+
+  const handleEmailRegister = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await registerWithEmail(email, password);
+    console.log("Registration successful", res.user);
+    await saveUserToFirestore(res.user);
+    navigate("/users");
+  } catch (err) {
+    console.error("Registration error:", err);
+    alert("Registration failed: " + err.message);
+  }
+};
 
   const handleGoogleLogin = async () => {
     try {
@@ -91,7 +104,7 @@ const WelcomeScreen = () => {
         Connect with anyone, anytime. Let's get started!
       </Typography>
 
-      <Box component="form" mt={3} mb={2} onSubmit={handleEmailLogin}>
+      <Box component="form" mt={3} mb={2} onSubmit={ handleEmailRegister}>
         <TextField
           label="Email"
           fullWidth
@@ -124,7 +137,7 @@ const WelcomeScreen = () => {
             },
           }}
         >
-          Login with Email
+         Register
         </Button>
       </Box>
 

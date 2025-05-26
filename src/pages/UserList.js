@@ -84,12 +84,19 @@ const UsersList = ({ themeMode, toggleTheme }) => {
       await Promise.all(
         users.map(async (user) => {
           try {
-            const roomId = await createOrGetPrivateRoom(currentUser.uid, user.uid);
+            const roomId = await createOrGetPrivateRoom(
+              currentUser.uid,
+              user.uid
+            );
             if (roomId) {
               map[user.uid] = roomId;
             }
           } catch (err) {
-            console.error("Error getting private room for user:", user.uid, err);
+            console.error(
+              "Error getting private room for user:",
+              user.uid,
+              err
+            );
           }
         })
       );
@@ -110,7 +117,12 @@ const UsersList = ({ themeMode, toggleTheme }) => {
       await Promise.all(
         groups.map(async (group) => {
           try {
-            const messagesCol = collection(db, "chatRooms", group.id, "messages");
+            const messagesCol = collection(
+              db,
+              "chatRooms",
+              group.id,
+              "messages"
+            );
             const unreadQuery = query(
               messagesCol,
               where(`read.${currentUser.uid}`, "==", false)
@@ -119,7 +131,11 @@ const UsersList = ({ themeMode, toggleTheme }) => {
             counts[group.id] = snapshot.data().count || 0;
           } catch (err) {
             counts[group.id] = 0;
-            console.error("Error fetching unread count for group", group.id, err);
+            console.error(
+              "Error fetching unread count for group",
+              group.id,
+              err
+            );
           }
         })
       );
@@ -136,7 +152,11 @@ const UsersList = ({ themeMode, toggleTheme }) => {
             const snapshot = await getCountFromServer(unreadQuery);
             counts[roomId] = snapshot.data().count || 0;
           } catch (err) {
-            console.error("Error fetching unread count for private chat", userUid, err);
+            console.error(
+              "Error fetching unread count for private chat",
+              userUid,
+              err
+            );
           }
         })
       );
@@ -182,7 +202,9 @@ const UsersList = ({ themeMode, toggleTheme }) => {
         // Remove from privateRoomsMap & users (if needed)
         setPrivateRoomsMap((prev) => {
           const newMap = { ...prev };
-          const userUid = Object.entries(prev).find(([uid, rId]) => rId === roomId)?.[0];
+          const userUid = Object.entries(prev).find(
+            ([uid, rId]) => rId === roomId
+          )?.[0];
           if (userUid) {
             delete newMap[userUid];
           }
@@ -346,7 +368,38 @@ const UsersList = ({ themeMode, toggleTheme }) => {
                         {name.charAt(0).toUpperCase()}
                       </Avatar>
                     </Badge>
-                    <Typography sx={{ ml: 2, fontWeight: 500 }}>{name}</Typography>
+                    <Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {user.displayName}
+                      </Typography>
+
+                      {user.statusMessage && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            fontStyle: "italic",
+                            fontSize: "0.75rem",
+                            mt: 0.5,
+                          }} // mt adds margin-top for spacing
+                        >
+                          {user.statusMessage}
+                        </Typography>
+                      )}
+                    </Box>
+
+                    {/* <Typography sx={{ ml: 2, fontWeight: 500 }}>
+                      {name}
+                    </Typography>
+                    {user.statusMessage && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontStyle: "italic", fontSize: "0.75rem" }}
+                      >
+                        {user.statusMessage}
+                      </Typography>
+                    )} */}
 
                     {/* Delete icon, visible on hover */}
                     <IconButton
@@ -381,11 +434,13 @@ const UsersList = ({ themeMode, toggleTheme }) => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialog.open} onClose={closeDeleteDialog}>
-        <DialogTitle>Delete {deleteDialog.isGroup ? "Group" : "Chat"}</DialogTitle>
+        <DialogTitle>
+          Delete {deleteDialog.isGroup ? "Group" : "Chat"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete{" "}
-            <strong>{deleteDialog.name}</strong>? This action cannot be undone.
+            Are you sure you want to delete <strong>{deleteDialog.name}</strong>
+            ? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -402,22 +457,6 @@ const UsersList = ({ themeMode, toggleTheme }) => {
 };
 
 export default UsersList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import {
@@ -703,51 +742,6 @@ export default UsersList;
 
 // export default UsersList;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { collection, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
 // import { getAuth } from "firebase/auth";
@@ -885,7 +879,7 @@ export default UsersList;
 //         await deleteDoc(doc(db, "chatRooms", selectedToDelete));
 //         setGroups((prev) => prev.filter((g) => g.id !== selectedToDelete));
 //       } else if (deleteType === "user") {
-//         // For private chats, you might want to delete the room or the relationship — 
+//         // For private chats, you might want to delete the room or the relationship —
 //         // here we just remove the user from the list, since you can't delete users from DB.
 //         setUsers((prev) => prev.filter((u) => u.uid !== selectedToDelete));
 //         // Optionally: delete private chat rooms involving this user if your app supports that.
@@ -1019,20 +1013,6 @@ export default UsersList;
 // };
 
 // export default UsersList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { collection, getDocs, query, where } from "firebase/firestore";

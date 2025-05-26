@@ -35,7 +35,12 @@ const ProfilePage = () => {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
-          setProfile(userSnap.data());
+          const data = userSnap.data();
+          setProfile({
+            displayName: data.displayName || "",
+            avatarURL: data.avatarURL || "",
+            statusMessage: data.statusMessage || "",
+          });
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -64,45 +69,44 @@ const ProfilePage = () => {
     setProfile((prev) => ({ ...prev, avatarURL: previewURL }));
   };
 
-const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
-const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
-
+  const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
+  const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
   const handleSave = async () => {
-  try {
-    setUploading(true);
+    try {
+      setUploading(true);
 
-    let avatarURL = profile.avatarURL;
+      let avatarURL = profile.avatarURL;
 
-    if (avatarFile) {
-      const formData = new FormData();
-      formData.append("file", avatarFile);
-      formData.append("upload_preset", UPLOAD_PRESET); // replace with your preset
-      formData.append("folder", "chatUploads/avatars"); // optional folder
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append("file", avatarFile);
+        formData.append("upload_preset", UPLOAD_PRESET); // replace with your preset
+        formData.append("folder", "chatUploads/avatars"); // optional folder
 
-      const response = await fetch(CLOUDINARY_URL, {
-        method: "POST",
-        body: formData,
+        const response = await fetch(CLOUDINARY_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        avatarURL = data.secure_url;
+      }
+
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        ...profile,
+        avatarURL: avatarURL || "", // fallback to empty string
       });
 
-      const data = await response.json();
-      avatarURL = data.secure_url;
+      alert("Profile updated!");
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("Failed to update profile.");
+    } finally {
+      setUploading(false);
     }
-
-    const userRef = doc(db, "users", user.uid);
-    await updateDoc(userRef, {
-      ...profile,
-      avatarURL,
-    });
-
-    alert("Profile updated!");
-  } catch (err) {
-    console.error("Error saving profile:", err);
-    alert("Failed to update profile.");
-  } finally {
-    setUploading(false);
-  }
-};
+  };
 
   // const handleSave = async () => {
   //   try {
@@ -249,15 +253,10 @@ const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 export default ProfilePage;
 
-
-
-
-
-
 // import React, { useState, useEffect } from 'react';
 // import { doc, getDoc, updateDoc } from "firebase/firestore";
 // import { getAuth } from "firebase/auth";
-// import { db } from '../firebase'; 
+// import { db } from '../firebase';
 // import {
 //   Box,
 //   TextField,
