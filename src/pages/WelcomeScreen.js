@@ -137,7 +137,7 @@ const WelcomeScreen = () => {
             },
           }}
         >
-         Register
+         Register 
         </Button>
       </Box>
 
