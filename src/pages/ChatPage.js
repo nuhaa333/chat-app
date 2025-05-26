@@ -1,4 +1,4 @@
-
+//src/pages/ChatPage.js
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -158,10 +158,9 @@ const ChatPage = () => {
 
     try {
       if (fileUpload) {
-  mediaUrl = await uploadFileToCloudinary(fileUpload);
-  mediaType = fileUpload.type;
-}
-
+        mediaUrl = await uploadFileToCloudinary(fileUpload);
+        mediaType = fileUpload.type;
+      }
 
       // 🔁 Fetch participants and build readStatus
       const roomRef = doc(db, "chatRooms", roomId);
@@ -199,33 +198,32 @@ const ChatPage = () => {
     }
   };
 
-
   // Handle file selection
-//const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
-const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+  //const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
+  const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
   const uploadFileToCloudinary = async (file) => {
-  const url = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET);
+    const url = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
-    if (data.secure_url) {
-      return data.secure_url; // Return the URL of uploaded file
-    } else {
-      throw new Error("Cloudinary upload failed");
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.secure_url) {
+        return data.secure_url; // Return the URL of uploaded file
+      } else {
+        throw new Error("Cloudinary upload failed");
+      }
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
     }
-  } catch (error) {
-    console.error("Cloudinary upload error:", error);
-    throw error;
-  }
-};
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -321,16 +319,39 @@ const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
           mb: 2,
           px: 1,
           maxHeight: "70vh",
-          scrollbarWidth: "thin",
-          "&::-webkit-scrollbar": { width: 8 },
+          scrollbarWidth: "thin", // Firefox support
+          scrollbarColor: `${isDark ? "#7c3aed" : "#a78bfa"} transparent`, // Firefox color
+          "&::-webkit-scrollbar": {
+            width: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: isDark ? "#7c3aed" : "#a78bfa",
-            borderRadius: 4,
+            borderRadius: "10px",
           },
           display: "flex",
           flexDirection: "column",
           gap: 1,
         }}
+
+        // sx={{
+        //   flexGrow: 1,
+        //   overflowY: "auto",
+        //   mb: 2,
+        //   px: 1,
+        //   maxHeight: "70vh",
+        //   scrollbarWidth: "thin",
+        //   "&::-webkit-scrollbar": { width: 8 },
+        //   "&::-webkit-scrollbar-thumb": {
+        //     backgroundColor: isDark ? "#7c3aed" : "#a78bfa",
+        //     borderRadius: 4,
+        //   },
+        //   display: "flex",
+        //   flexDirection: "column",
+        //   gap: 1,
+        // }}
       >
         {messages.map((msg) => {
           const isCurrentUser = msg.senderUid === currentUser?.uid;
@@ -598,9 +619,6 @@ const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 };
 
 export default ChatPage;
-
-
-
 
 // import { useParams } from "react-router-dom";
 // import {
